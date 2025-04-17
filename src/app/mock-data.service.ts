@@ -15,7 +15,7 @@ export class MockDataService {
         this.charactersLoader$.next(true);
         const queryParams: string = searchTerm ? `?search=${searchTerm}` : '';
         return this.httpClient
-            .get<any>(`https://swapi.dev/api/people/${queryParams}`)
+            .get<any>(`https://www.swapi.tech/api/people/${queryParams}`)
             .pipe(finalize(() => this.charactersLoader$.next(false)))
             .pipe(map((response) => response.results));
     }
@@ -24,7 +24,7 @@ export class MockDataService {
         this.planetsLoader$.next(true);
         const queryParams: string = searchTerm ? `?search=${searchTerm}` : '';
         return this.httpClient
-            .get<any>(`https://swapi.dev/api/planets/${queryParams}`)
+            .get<any>(`https://www.swapi.tech/api/planets/${queryParams}`)
             .pipe(finalize(() => this.planetsLoader$.next(false)))
             .pipe(map((response) => response.results));
     }
