@@ -17,6 +17,9 @@ import { DurationPipe } from './pipes/duration.pipe';
 import { CustomDatePipe } from './pipes/custom-date.pipe';
 import { EmailValidatorDirective } from '@shared/directives/email.directive';
 
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+
 const components = [
   HeaderComponent,
   ButtonComponent,
@@ -40,6 +43,10 @@ const components = [
     FormsModule,
     ReactiveFormsModule,
   ],
-  exports: [components]
+  exports: [components, FontAwesomeModule, CourseCardComponent]
 })
-export class SharedModule { }
+export class SharedModule {
+  constructor(library: FaIconLibrary) {
+    library.addIconPacks(fas);
+  }
+ }
