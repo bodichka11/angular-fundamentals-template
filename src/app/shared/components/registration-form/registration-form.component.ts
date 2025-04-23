@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-registration-form',
@@ -8,5 +8,46 @@ import { FormGroup } from '@angular/forms';
 })
 export class RegistrationFormComponent {
   registrationForm!: FormGroup;
-  // Use the names `name`, `email`, `password` for the form controls.
+  submitted = false;
+
+  constructor(private fb: FormBuilder) {}
+
+  ngOnInit(): void {
+    this.registrationForm = this.fb.group({
+      name: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(6)
+        ]
+      ],
+      email: [
+        '',
+        [
+          Validators.required
+        ]
+      ],
+      password: [
+        '',
+        [
+          Validators.required
+        ]
+      ]
+    });
+  }
+
+  get f() {
+    return this.registrationForm.controls;
+  }
+
+  onSubmit(): void {
+    this.submitted = true;
+
+    if (this.registrationForm.invalid) {
+      return;
+    }
+
+    const { name, email, password } = this.registrationForm.value;
+    console.log('Registration payload:', { name, email, password });
+  }
 }

@@ -1,55 +1,143 @@
-<!-- Replace ::text:: with your code -->
 <h2>Create / Edit Course</h2>
-<form>
+<form [formGroup]="courseForm" (ngSubmit)="onSubmit()">
   <div class="app-plate">
     <div class="course">
       <h3>Main Info</h3>
       <div class="form__control">
         <label for="title">Title</label>
-        <!--Use the name `title` for the form control.-->
-        <input type="text" id="title" placeholder="Input text"/>
-        <span id="titleErrorMessage" class="text-danger">Title is required.</span>
+        <input
+          type="text"
+          id="title"
+          formControlName="title"
+          placeholder="Course title"
+          class="form-control"
+        />
+        <div
+          class="text-danger"
+          *ngIf="f['title'].invalid && (f['title'].touched || submitted)"
+        >
+          <small *ngIf="f['title'].errors?.['required']">Title is required.</small>
+          <small *ngIf="f['title'].errors?.['minlength']">
+            Minimum 2 characters.
+          </small>
+        </div>
       </div>
+
       <div class="form__control">
         <label for="description">Description</label>
-        <!--Use the name `description` for the form control.-->
         <textarea
           id="description"
-          name="description"
-          placeholder="Input text"
+          formControlName="description"
           rows="4"
-          cols="5"
+          placeholder="Course description"
+          class="form-control"
         ></textarea>
-        <span id="descriptionErrorMessage" class="text-danger">Description is required.</span>
+        <div
+          class="text-danger"
+          *ngIf="f['description'].invalid && (f['description'].touched || submitted)"
+        >
+          <small *ngIf="f['description'].errors?.['required']">
+            Description is required.
+          </small>
+          <small *ngIf="f['description'].errors?.['minlength']">
+            Minimum 2 characters.
+          </small>
+        </div>
       </div>
+
       <div class="separator"></div>
+
       <h3>Authors</h3>
       <div class="form__control">
-        <div class="course__flex">
-          <!--Use the name `author` for the form control.-->
-          <input type="text" id="author" placeholder="Input Author Name"/>
-          <app-button id="createAuthor"></app-button>
+
+        <div formGroupName="newAuthor" class="course__flex">
+          <input
+            type="text"
+            id="author"
+            formControlName="author"
+            placeholder="Input author name"
+            class="form-control"
+          />
+          <app-button
+            type="button"
+            id="createAuthor"
+            buttonText="Create author"
+            (click)="createAuthor()"
+          ></app-button>
         </div>
-        <span id="authorErrorMessage">New author should contain only latin letters and numbers.</span>
+        <div
+          class="text-danger"
+          *ngIf="newAuthorControl.invalid && (newAuthorControl.touched || submitted)"
+        >
+          <small *ngIf="newAuthorControl.errors?.['minlength']">
+            At least 2 characters.
+          </small>
+          <small *ngIf="newAuthorControl.errors?.['pattern']">
+            Only Latin letters &amp; numbers.
+          </small>
+        </div>
+
         <div class="course__authors">
-          <!--Use the name `authors` for the form array.-->
-          ::Authors::
+          <h4>All Authors</h4>
+          <div *ngFor="let a of availableAuthors">
+            {{ a.name }}
+            <app-button
+              type="button"
+              buttonText="Add author"
+              (click)="addAuthor(a)"
+            ></app-button>
+          </div>
+
+          <h4>Course Authors</h4>
+          <div
+            *ngFor="let grp of authors.controls; let i = index"
+            [formGroup]="grp"
+          >
+            <input
+              formControlName="name"
+              [disabled]="true"
+              class="form-control"
+            />
+            <app-button
+              type="button"
+              buttonText="Delete author"
+              (click)="deleteAuthor(i)"
+            ></app-button>
+          </div>
         </div>
       </div>
+
       <div class="separator"></div>
+
       <h3>Duration</h3>
       <div class="form__control">
         <div class="course__flex">
-          <!--Use the name `duration` for the form array.-->
-          <input type="number" id="duration" placeholder="Input duration"/>
+          <input
+            type="number"
+            id="duration"
+            formControlName="duration"
+            placeholder="Duration in minutes"
+            class="form-control"
+          />
           <div class="course__duration">
-            ::Duration::
+            {{ courseForm.value.duration | duration }}
           </div>
         </div>
-        <span id="durationErrorMessage" class="text-danger">Duration is required.</span>
+        <div
+          class="text-danger"
+          *ngIf="f['duration'].invalid && (f['duration'].touched || submitted)"
+        >
+          <small *ngIf="f['duration'].errors?.['required']">
+            Duration is required.
+          </small>
+          <small *ngIf="f['duration'].errors?.['min']">
+            Cannot be negative.
+          </small>
+        </div>
       </div>
+
       <div class="form__action">
-        <app-button></app-button>
+        <app-button type="submit" buttonText="Save"></app-button>
       </div>
     </div>
   </div>

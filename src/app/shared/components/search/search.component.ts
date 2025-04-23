@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-search',
@@ -6,7 +7,14 @@ import { Component } from '@angular/core';
   styleUrls: ['./search.component.scss']
 })
 export class SearchComponent {
-  // Use the name `placeholder` for the @Input.
-  // Use the name `search` for the @Output.
+ @Input() placeholder: string = '';
+ @Output() search = new EventEmitter<string>();
+
+ query: string = '';
+
+ onSubmit(form: NgForm): void {
+   this.search.emit(this.query.trim());
+   form.resetForm();
+ }
 }
 

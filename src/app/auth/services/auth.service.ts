@@ -16,8 +16,10 @@ export class AuthService {
         // Add your code here
     }
 
+    private isAuthorized$$: boolean = false; 
+
     get isAuthorised() {
-        // Add your code here. Get isAuthorized$$ value
+        return this.isAuthorized$$;
     }
 
     set isAuthorised(value: boolean) {

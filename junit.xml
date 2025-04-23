@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="2" failures="0" errors="0" time="3.643">
-  <testsuite name="CoursesComponent" errors="0" failures="0" skipped="0" timestamp="2025-04-22T11:39:03" time="0.88" tests="1">
-    <testcase classname="CoursesComponent should create" name="CoursesComponent should create" time="0.046">
-    </testcase>
-  </testsuite>
-  <testsuite name="CoursesListComponent" errors="0" failures="0" skipped="0" timestamp="2025-04-22T11:39:03" time="2.17" tests="1">
-    <testcase classname="CoursesListComponent should create" name="CoursesListComponent should create" time="0.062">
+<testsuites name="jest tests" tests="1" failures="0" errors="0" time="16.042">
+  <testsuite name="CoursesComponent" errors="0" failures="0" skipped="0" timestamp="2025-04-22T12:50:43" time="4.869" tests="1">
+    <testcase classname="CoursesComponent should create" name="CoursesComponent should create" time="0.043">
     </testcase>
   </testsuite>
 </testsuites>
