@@ -19,7 +19,4 @@ export class CourseCardComponent {
     this.clickOnShow.emit();
   }
 }
-// function Output(): (target: CourseCardComponent, propertyKey: "clickOnShow") => void {
-//   throw new Error('Function not implemented.');
-// }
 

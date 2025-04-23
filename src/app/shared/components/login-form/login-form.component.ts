@@ -7,14 +7,15 @@ import { NgForm } from '@angular/forms';
   styleUrls: ['./login-form.component.scss'],
 })
 export class LoginFormComponent {
-  @ViewChild("loginForm") public loginForm!: NgForm;
-  
-  onSubmit(): void {
-    this.loginForm.form.markAllAsTouched();
+  @ViewChild('loginForm') public loginForm!: NgForm;
 
-    if (this.loginForm.valid) {
-      const { email, password } = this.loginForm.value;
-      console.log('Logging in with', email, password);
-    }
+  model = {
+    email: '',
+    password: '',
+  };
+
+  onSubmit(ngForm: NgForm): void {
+    ngForm.form.markAllAsTouched();
+    console.log(this.model);
   }
 }
