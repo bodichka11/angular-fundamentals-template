@@ -20,6 +20,7 @@ export class EmailValidatorDirective implements Validator {
       return null;
     }
     const valid = this.emailRegexp.test(value);
-    return valid ? null : { 'appEmail': { valid: false, value } };
+    return valid ? null : { 'emailValidator': { valid: false, value } };
   }
 }
+
