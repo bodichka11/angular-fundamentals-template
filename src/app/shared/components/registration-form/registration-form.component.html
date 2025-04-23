@@ -14,10 +14,11 @@
           formControlName="name"
           placeholder="Enter your name"
           class="form-control"
+          (blur)="f['name'].markAsTouched()" 
         />
         <div
           class="text-danger"
-          *ngIf="f['name'].invalid && (f['name'].touched || submitted)"
+          *ngIf="(f['name'].touched || submitted) && f['name'].invalid"
         >
           <small *ngIf="f['name'].errors?.['required']">
             Name is required.
@@ -33,19 +34,22 @@
         <input
           type="text"
           id="email"
+          name="email"
           formControlName="email"
-          appEmail
+          required
+          emailValidator
           placeholder="Enter your email"
           class="form-control"
+          (blur)="f['email'].markAsTouched()"
         />
         <div
           class="text-danger"
-          *ngIf="f['email'].invalid && (f['email'].touched || submitted)"
+          *ngIf="(f['email'].touched || submitted) && f['email'].invalid" 
         >
           <small *ngIf="f['email'].errors?.['required']">
             Email is required.
           </small>
-          <small *ngIf="f['email'].errors?.['appEmail']">
+          <small *ngIf="f['email'].errors?.['emailValidator']">
             Invalid email format.
           </small>
         </div>
@@ -59,10 +63,11 @@
           formControlName="password"
           placeholder="Enter your password"
           class="form-control"
+          (blur)="f['password'].markAsTouched()"
         />
         <div
           class="text-danger"
-          *ngIf="f['password'].invalid && (f['password'].touched || submitted)"
+          *ngIf="(f['password'].touched || submitted) && f['password'].invalid"
         >
           <small *ngIf="f['password'].errors?.['required']">
             Password is required.

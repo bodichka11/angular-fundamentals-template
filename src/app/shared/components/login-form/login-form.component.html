@@ -15,26 +15,25 @@
             name="email"
             ngModel
             required
-            appEmail
+            emailValidator
             #emailCtrl="ngModel"
             placeholder="Enter your email"
             class="form-control"
+            (blur)="emailCtrl.control.markAsTouched()"
           />
           <div
             class="text-danger"
-            *ngIf="
-              emailCtrl.invalid &&
-              (emailCtrl.touched || loginForm.submitted)
-            "
+            *ngIf="(emailCtrl.touched || loginForm.submitted) && emailCtrl.invalid" 
           >
             <small *ngIf="emailCtrl.errors?.['required']">
               Email is required.
             </small>
-            <small *ngIf="emailCtrl.errors?.['appEmail']">
+            <small *ngIf="emailCtrl.errors?.['emailValidator']">
               Invalid email format.
             </small>
           </div>
         </div>
+
         <div class="form__control">
           <label for="password">Password</label>
           <input
@@ -46,13 +45,11 @@
             #passwordCtrl="ngModel"
             placeholder="Enter your password"
             class="form-control"
+            (blur)="passwordCtrl.control.markAsTouched()"
           />
           <div
             class="text-danger"
-            *ngIf="
-              passwordCtrl.invalid &&
-              (passwordCtrl.touched || loginForm.submitted)
-            "
+            *ngIf="(passwordCtrl.touched || loginForm.submitted) && passwordCtrl.invalid"
           >
             <small *ngIf="passwordCtrl.errors?.['required']">
               Password is required.
