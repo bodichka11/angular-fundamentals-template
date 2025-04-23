@@ -12,7 +12,7 @@
       </div>
       <div class="form__control">
         <label for="email">Email</label>
-        <input type="text" id="email" placeholder="Input text" formControlName="email" required />
+        <input type="text" id="email" placeholder="Input text" formControlName="email" required emailValidator />
         <div *ngIf="email?.invalid && email?.touched" id="emailErrorMessage" class="text-danger">
           <div *ngIf="email?.errors?.['required']">Email is required.</div>
           <div *ngIf="email?.errors?.['invalidEmail']">Invalid email.</div>

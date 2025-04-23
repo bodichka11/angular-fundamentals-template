@@ -7,14 +7,13 @@ import { NgForm } from '@angular/forms';
   styleUrls: ['./search.component.scss']
 })
 export class SearchComponent {
- @Input() placeholder: string = '';
- @Output() search = new EventEmitter<string>();
+  @Input() placeholder: string = 'Enter text';
+  @Output() searchClicked = new EventEmitter<string>();
 
- query: string = '';
+  inputValue: string = '';
 
- onSubmit(form: NgForm): void {
-   this.search.emit(this.query.trim());
-   form.resetForm();
- }
+  onSearchClick() {
+    this.searchClicked.emit(this.inputValue.trim());
+  }
 }
 

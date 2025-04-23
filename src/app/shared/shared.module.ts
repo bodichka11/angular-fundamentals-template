@@ -19,6 +19,7 @@ import { EmailValidatorDirective } from '@shared/directives/email.directive';
 
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
+import { PasswordDirective } from './directives/password.directive';
 
 const components = [
   HeaderComponent,
@@ -32,7 +33,8 @@ const components = [
   CourseFormComponent,
   DurationPipe,
   CustomDatePipe,
-  EmailValidatorDirective
+  EmailValidatorDirective,
+  PasswordDirective
 ];
 
 @NgModule({
