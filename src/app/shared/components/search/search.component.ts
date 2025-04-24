@@ -12,7 +12,7 @@ export class SearchComponent {
   inputValue: string = '';
 
   onSearchClick() {
-    this.searchClicked.emit(this.inputValue.trim());
+    this.searchClicked.emit(this.inputValue);
   }
 }
 

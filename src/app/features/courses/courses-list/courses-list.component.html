@@ -1,16 +1,25 @@
-<div class="courses-list">
-    <app-course-card
-      *ngFor="let course of courses"
-      [title]="course.title"
-      [description]="course.description"
-      [creationDate]="course.creationDate"
-      [duration]="course.duration"
-      [authors]="course.authors"
-      [editable]="editable"
-      (clickOnShow)="onShow(course.id)"
-    >
-      <button *ngIf="editable" (click)="onEdit(course.id)">Edit</button>
-      <button *ngIf="editable" (click)="onDelete(course.id)">Remove</button>
-    </app-course-card>
-  </div>
-  
+<div class="search-group">
+  <app-search (searchClicked)="searchCourse($event)"></app-search>
+  <ng-container *ngIf="editable">
+    <app-button buttonText="Add New Course" (click)="addCourse()"></app-button>
+  </ng-container>
+</div>
+
+<div class="app-courses-list">
+  <app-course-card
+    *ngFor="let course of courses; trackBy: trackByCourses"
+    [title]="course.title"
+    [description]="course.description"
+    [creationDate]="course.creationDate"
+    [duration]="course.duration"
+    [authors]="course.authors">
+
+    <app-button buttonText="Show Course" (click)="showCourse(course.id ?? '')"></app-button>
+    <ng-container *ngIf="editable">
+      <div class="app-courses-list__buttons">
+        <app-button iconName="trash-can" (click)="deleteCourse(course.id ?? '')"></app-button>
+        <app-button iconName="pencil" (click)="editCourse(course.id ?? '')"></app-button>
+      </div>
+    </ng-container>
+  </app-course-card>
+</div>
