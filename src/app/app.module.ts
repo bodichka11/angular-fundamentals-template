@@ -15,14 +15,15 @@ import { WINDOW } from './shared/tokens/window.token';
 import { RouterModule, Routes } from '@angular/router';
 import { CourseFormComponent, LoginFormComponent, RegistrationFormComponent } from './shared/components';
 import { CoursesListComponent } from './features/courses/courses-list/courses-list.component';
+import { AdminGuard } from './user/guards/admin.guard';
 
 
 const routes: Routes = [
     { path: 'login', component: LoginFormComponent, canActivate: [NotAuthorizedGuard] },
     { path: 'registration', component: RegistrationFormComponent, canActivate: [NotAuthorizedGuard] },
     { path: 'courses', component: CoursesListComponent, canLoad: [AuthorizedGuard] },
-    { path: 'courses/add', component: CourseFormComponent, canLoad: [AuthorizedGuard] },
-    { path: 'courses/:id', component: CourseInfoComponent, canLoad: [AuthorizedGuard] },
+    { path: 'courses/add', component: CourseFormComponent, canLoad: [AuthorizedGuard], canActivate: [AdminGuard] },
+    { path: 'courses/:id', component: CourseInfoComponent, canLoad: [AuthorizedGuard], canActivate: [AdminGuard] },
     { path: 'courses/edit/:id', component: CourseFormComponent, canLoad: [AuthorizedGuard] },
     { path: '**', redirectTo: 'courses' },
   ];
