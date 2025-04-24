@@ -37,7 +37,7 @@ export class AuthService {
   }
 
   logout() {
-    return this.http.post(`${this.defaultApi}/logout`, {}).pipe(
+    return this.http.delete(`${this.defaultApi}/logout`, {}).pipe(
       tap(() => {
         this.sessionStorage.deleteToken();
         this.isAuthorized$$.next(false);
