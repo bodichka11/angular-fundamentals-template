@@ -15,86 +15,78 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./course-form.component.scss'],
 })
 export class CourseFormComponent {
-  courseForm!: FormGroup;
-  submitted = false;
-
-  availableAuthors: Author[] = [...mockedAuthorsList];
-
-  constructor(
-    private fb: FormBuilder,
-    library: FaIconLibrary
-  ) {
+  constructor(public fb: FormBuilder, public library: FaIconLibrary) {
     library.addIconPacks(fas);
   }
-
-  ngOnInit() {
+  courseForm!: FormGroup;
+  ngOnInit(): void {
     this.courseForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(2)]],
       description: ['', [Validators.required, Validators.minLength(2)]],
-      duration: [0, [Validators.required, Validators.min(0)]],
-      authors: this.fb.array([]),
       newAuthor: this.fb.group({
         author: [
           '',
-          [
-            Validators.minLength(2),
-            Validators.pattern(/^[A-Za-z0-9]+$/)
-          ]
-        ]
-      })
+          [Validators.minLength(2), Validators.pattern(/^[a-zA-Z0-9]*$/)],
+        ],
+      }),
+      authors: this.fb.array<Author>(mockedAuthorsList),
+      courseAuthors: this.fb.array<Author>([], Validators.required),
+      duration: ['', [Validators.required, Validators.min(0)]],
     });
   }
 
-  get f() {
-    return this.courseForm.controls;
+  get title() {
+    return this.courseForm.get('title');
   }
 
-  get authors(): FormArray<FormGroup> {
-    return this.f['authors'] as FormArray<FormGroup>;
+  get description() {
+    return this.courseForm.get('description');
   }
 
-  get newAuthorControl(): FormControl {
-    return (this.f['newAuthor'] as FormGroup).get('author') as FormControl;
+  get author() {
+    return this.courseForm.get('newAuthor.author');
   }
 
-  addAuthor(a: Author) {
-    this.availableAuthors = this.availableAuthors.filter(x => x.id !== a.id);
-    this.authors.push(this.fb.group({
-      id: [a.id],
-      name: [{ value: a.name, disabled: true }]
-    }));
+  get authors() {
+    return this.courseForm.get('authors') as FormArray;
   }
 
-  deleteAuthor(i: number) {
-    const grp = this.authors.at(i) as FormGroup;
-    const author: Author = {
-      id: grp.get('id')!.value,
-      name: grp.get('name')!.value
-    };
-    this.availableAuthors.push(author);
-    this.authors.removeAt(i);
+  get courseAuthors() {
+    return this.courseForm.get('courseAuthors') as FormArray;
   }
 
-  createAuthor() {
-    this.newAuthorControl.markAsTouched();
-    if (this.newAuthorControl.invalid) return;
-    const name = this.newAuthorControl.value;
-    const newAuth: Author = {
-      id: Math.random().toString(36).substr(2, 9),
-      name
-    };
-    this.availableAuthors.push(newAuth);
-    this.newAuthorControl.reset();
+  get duration() {
+    return this.courseForm.get('duration');
   }
 
-  onSubmit() {
-    this.submitted = true;
+  createAuthor(name: string) {
+    if (this.author?.valid) {
+      this.authors.push(this.fb.control({ name, id: 'generateRandomId' }));
+      this.courseForm.get('newAuthor')?.reset();
+    }
+  }
+
+  deleteAuthor(index: number): void {
+    this.authors.removeAt(index);
+  }
+
+  addCourseAuthor(author: Author, index: number): void {
+    this.courseAuthors.push(this.fb.control(author));
+    this.authors.removeAt(index);
+  }
+
+  removeCourseAuthor(index: number): void {
+    const author = this.courseAuthors.at(index).value;
+    this.authors.push(this.fb.control(author));
+    this.courseAuthors.removeAt(index);
+  }
+
+  onSubmit(): void {
     this.courseForm.markAllAsTouched();
-    if (this.courseForm.invalid) return;
-    const payload = {
-      ...this.courseForm.value,
-      authors: this.authors.controls.map(g => (g as FormGroup).get('id')!.value)
-    };
-    console.log('Save course:', payload);
+    console.log('submit');
+  }
+
+  onCancel() {
+    console.log('cancel');
   }
 }
