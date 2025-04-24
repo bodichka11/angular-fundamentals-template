@@ -15,23 +15,23 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./course-form.component.scss'],
 })
 export class CourseFormComponent {
+  courseForm!: FormGroup;
+
   constructor(public fb: FormBuilder, public library: FaIconLibrary) {
     library.addIconPacks(fas);
   }
-  courseForm!: FormGroup;
+
   ngOnInit(): void {
     this.courseForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(2)]],
       description: ['', [Validators.required, Validators.minLength(2)]],
-      newAuthor: this.fb.group({
-        author: [
-          '',
-          [Validators.minLength(2), Validators.pattern(/^[a-zA-Z0-9]*$/)],
-        ],
-      }),
+      author: [
+        '',
+        [Validators.minLength(2), Validators.pattern(/^[a-zA-Z0-9]*$/)]
+      ],
       authors: this.fb.array<Author>(mockedAuthorsList),
       courseAuthors: this.fb.array<Author>([], Validators.required),
-      duration: ['', [Validators.required, Validators.min(0)]],
+      duration: ['', [Validators.required, Validators.min(0)]]
     });
   }
 
@@ -44,7 +44,7 @@ export class CourseFormComponent {
   }
 
   get author() {
-    return this.courseForm.get('newAuthor.author');
+    return this.courseForm.get('author');
   }
 
   get authors() {
@@ -62,7 +62,7 @@ export class CourseFormComponent {
   createAuthor(name: string) {
     if (this.author?.valid) {
       this.authors.push(this.fb.control({ name, id: 'generateRandomId' }));
-      this.courseForm.get('newAuthor')?.reset();
+      this.author?.reset();
     }
   }
 
@@ -86,7 +86,7 @@ export class CourseFormComponent {
     console.log('submit');
   }
 
-  onCancel() {
+  onCancel(): void {
     console.log('cancel');
   }
 }
