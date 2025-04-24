@@ -1,32 +1,64 @@
 import { Injectable } from '@angular/core';
+import { LoginResponse } from '@app/models/loginResponse';
+import { SessionStorageService } from './session-storage.service';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { BehaviorSubject, tap } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    login(user: any) { // replace 'any' with the required interface
-        // Add your code here
-    }
+    readonly defaultApi = environment.apiUrl;
+    private isAuthorized$$ = new BehaviorSubject<boolean>(false);
+    public isAuthorized$ = this.isAuthorized$$.asObservable();
 
-    logout() {
-        // Add your code here
-    }
+  constructor(
+    private http: HttpClient,
+    private sessionStorage: SessionStorageService,
+    private router: Router
+  ) {
+    this.checkAuthStatus();
+  }
 
-    register(user: any) { // replace 'any' with the required interface
-        // Add your code here
-    }
+  private checkAuthStatus() {
+    const token = this.sessionStorage.getToken();
+    this.isAuthorized = !!token;
+  }
 
-    private isAuthorized$$: boolean = false; 
+  login(user: { email: string; password: string }) {
+    return this.http.post<LoginResponse>(`${this.defaultApi}/login`, user).pipe(
+      tap(response => {
+        this.sessionStorage.setToken(response.accessToken);
+        this.isAuthorized$$.next(true);
+      })
+    );
+  }
 
-    get isAuthorised() {
-        return this.isAuthorized$$;
-    }
+  logout() {
+    return this.http.post(`${this.defaultApi}/logout`, {}).pipe(
+      tap(() => {
+        this.sessionStorage.deleteToken();
+        this.isAuthorized$$.next(false);
+        this.router.navigate(['/login']);
+      })
+    );
+  }
 
-    set isAuthorised(value: boolean) {
-        // Add your code here. Change isAuthorized$$ value
-    }
+  register(user: { email: string; password: string; name: string }) {
+    return this.http.post(`${this.defaultApi}/register`, user);
+  }
 
-    getLoginUrl() {
-        // Add your code here
-    }
+  get isAuthorized() {
+    return this.isAuthorized$$.value;
+  }
+
+  set isAuthorized(value: boolean) {
+    this.isAuthorized$$.next(value);
+  }
+
+  getLoginUrl() {
+    return '/login';
+  }
 }

@@ -6,12 +6,10 @@ import { CoursesListModule } from './courses-list/courses-list.module';
 
 
 @NgModule({
-  declarations: [
-    CoursesComponent
-  ],
+  declarations: [CoursesComponent],
   imports: [
     CommonModule,
-    CoursesListModule
-  ]
+    CoursesListModule,
+  ],
 })
-export class CoursesModule { }
+export class CoursesModule {}
