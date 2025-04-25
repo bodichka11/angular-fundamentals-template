@@ -4,16 +4,10 @@
     <app-button buttonText="Add New Course" (click)="addCourse()"></app-button>
   </ng-container>
 </div>
-
 <div class="app-courses-list">
-  <app-course-card
-    *ngFor="let course of courses; trackBy: trackByCourses"
-    [title]="course.title"
-    [description]="course.description"
-    [creationDate]="course.creationDate"
-    [duration]="course.duration"
+  <app-course-card *ngFor="let course of (courses$ | async); trackBy: trackByCourses" [title]="course.title"
+    [description]="course.description" [creationDate]="course.creationDate" [duration]="course.duration"
     [authors]="course.authors">
-
     <app-button buttonText="Show Course" (click)="showCourse(course.id ?? '')"></app-button>
     <ng-container *ngIf="editable">
       <div class="app-courses-list__buttons">

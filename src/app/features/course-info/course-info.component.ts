@@ -1,4 +1,6 @@
 import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
+import { CoursesStateFacade } from '@app/store/courses/courses.facade';
 
 @Component({
   selector: 'app-course-info',
@@ -6,10 +8,16 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./course-info.component.scss']
 })
 export class CourseInfoComponent {
-  @Input() title!: string;
-  @Input() description!: string;
-  @Input() id!: string;
-  @Input() creationDate!: Date;
-  @Input() duration!: number;
-  @Input() authors: string[] = [];
+  constructor(
+    private router: Router,
+    public coursesFacade: CoursesStateFacade,
+  ) {}
+
+  @Input() id = '';
+
+  course$ = this.coursesFacade.courseWithAuthorsNames$;
+
+  onBack(): void {
+    this.router.navigate(['/courses']);
+}
 }

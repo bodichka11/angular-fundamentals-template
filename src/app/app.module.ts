@@ -8,7 +8,6 @@ import { NotAuthorizedGuard } from '@app/auth/guards/not-authorized.guard';
 import { AuthorizedGuard } from '@app/auth/guards/authorized.guard';
 import { CoursesStoreService } from '@app/services/courses-store.service';
 import { CoursesService } from '@app/services/courses.service';
-import { CoursesModule } from './features/courses/courses.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { TokenInterceptor } from './auth/interceptors/token.interceptor';
 import { WINDOW } from './shared/tokens/window.token';
@@ -16,6 +15,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { CourseFormComponent, LoginFormComponent, RegistrationFormComponent } from './shared/components';
 import { CoursesListComponent } from './features/courses/courses-list/courses-list.component';
 import { AdminGuard } from './user/guards/admin.guard';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { effects, reducers } from './store/index';
 
 
 const routes: Routes = [
@@ -40,6 +42,8 @@ const routes: Routes = [
     FontAwesomeModule,
     HttpClientModule,
     RouterModule.forRoot(routes),
+    StoreModule.forRoot(reducers),
+    EffectsModule.forRoot(effects),
   ],
   exports: [FontAwesomeModule,],
   providers: [AuthorizedGuard, NotAuthorizedGuard, CoursesService, CoursesStoreService,

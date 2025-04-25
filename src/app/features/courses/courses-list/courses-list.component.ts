@@ -1,9 +1,9 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { Course } from '@app/models/course.models';
-import { CoursesStoreService } from '@app/services/courses-store.service';
+import { AuthorsFacade } from '@app/store/authors/authors.facade';
+import { CoursesStateFacade } from '@app/store/courses/courses.facade';
 import { UserStoreService } from '@app/user/services/user-store.service';
-import { combineLatestWith } from 'rxjs';
 
 
 @Component({
@@ -12,38 +12,27 @@ import { combineLatestWith } from 'rxjs';
   styleUrls: ['./courses-list.component.scss']
 })
 export class CoursesListComponent {
-  courses: Course[] = [];
-  editable = this.userStore.isAdmin;
-
   constructor(
     private router: Router,
-    private coursesStore: CoursesStoreService,
-    private userStore: UserStoreService
+    private userStore: UserStoreService,
+    public coursesFacade: CoursesStateFacade,
+    public authorsFacade: AuthorsFacade,
   ) {}
 
+  editable = this.userStore.isAdmin;
+  courses$ = this.coursesFacade.allCoursesWithAuthorsNames$;
+
   ngOnInit(): void {
-    this.subscribeToServices();
+    this.subscribeToServives();
   }
 
-  private subscribeToServices(): void {
-    this.coursesStore.courses$
-      .pipe(combineLatestWith(this.coursesStore.authors$))
-      .subscribe(([courses, authors]) => {
-        this.courses = courses.map(course => ({
-          ...course,
-          creationDate: course.creationDate ? new Date(course.creationDate).toISOString() : new Date().toISOString(),
-          authors: authors
-            .filter(({ id }) => course.authors.includes(id))
-            .map(({ name }) => name),
-        }));
-      });
-
-    this.coursesStore.getAll();
-    this.coursesStore.getAllAuthors();
+  private subscribeToServives(): void {
+    this.authorsFacade.getAllAuthors();
+    this.coursesFacade.getAllCourses();
   }
 
   showCourse(courseId: string): void {
-    this.coursesStore.getCourse(courseId);
+    this.coursesFacade.getSingleCourse(courseId);
     this.router.navigate(['/courses', courseId]);
   }
 
@@ -52,15 +41,16 @@ export class CoursesListComponent {
   }
 
   editCourse(id: string): void {
+    this.coursesFacade.getSingleCourse(id);
     this.router.navigate(['/courses/edit', id]);
   }
 
   deleteCourse(id: string): void {
-    this.coursesStore.deleteCourse(id);
+    this.coursesFacade.deleteCourse(id);
   }
 
   searchCourse(event: string): void {
-    this.coursesStore.filterCourses(event);
+    this.coursesFacade.getFilteredCourses(event);
   }
 
   trackByCourses(index: number, course: Course): string {

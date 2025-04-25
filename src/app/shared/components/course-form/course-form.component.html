@@ -2,9 +2,6 @@
 <form [formGroup]="courseForm" (ngSubmit)="onSubmit()" class="container">
   <div class="app-plate">
     <div class="course">
-      <div>
-
-      </div>
       <h3>Main Info</h3>
       <div class="form__control">
         <label for="title">Title</label>
@@ -30,7 +27,7 @@
           <input type="number" id="duration" placeholder="Input text" formControlName="duration" required
             class="max-width" />
           <div class="course__duration">
-            {{duration?.value | duration}}
+            {{ duration?.value | duration }}
           </div>
         </div>
         <div *ngIf="duration?.invalid && duration?.touched" id="durationErrorMessage" class="text-danger">
@@ -56,23 +53,20 @@
           </div>
           <div class="course__authors-list-body">
             <h4>Authors List</h4>
-            <div *ngFor="let authorData of authorsData; let i=index">
-              {{authorData.name}}
-              <button type="button" class="course__icon" (click)="addCourseAuthor(authorData)">
+            <div *ngFor="let restAuthor of authorsData; let i=index">
+              {{ restAuthor.name }}
+              <button type="button" class="course__icon" (click)="addCourseAuthor(restAuthor)">
                 <fa-icon [icon]="['fas', 'plus']"></fa-icon>
-              </button>
-              <button type="button" class="course__icon" (click)="deleteAuthor(authorData)">
-                <fa-icon [icon]="['fas', 'trash-can']"></fa-icon>
               </button>
             </div>
           </div>
         </div>
         <div class="course__authors-list">
           <h3>Course Authors</h3>
-          <div formArrayName="courseAuthors" class="course__authors-list-body">
-            <div *ngFor="let courseAuthorControl of courseAuthors.controls; let i=index">
-              {{courseAuthorControl.value.name}}
-              <button type="button" class="course__icon" (click)="removeCourseAuthor(i)">
+          <div formArrayName="authors" class="course__authors-list-body">
+            <div *ngFor="let authorControl of courseAuthors.controls; let i=index">
+              {{ authorControl.value.name }}
+              <button type="button" class="course__icon" (click)="removeCourseAuthor(authorControl.value, i)">
                 <fa-icon [icon]="['fas', 'trash-can']"></fa-icon>
               </button>
             </div>

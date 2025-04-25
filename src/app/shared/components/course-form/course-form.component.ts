@@ -8,11 +8,11 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { Author } from '@app/models/author';
 import { Course } from '@app/models/course.models';
-import { CoursesStoreService } from '@app/services/courses-store.service';
-import { mockedAuthorsList } from '@app/shared/mocks/mocks';
+import { AuthorsFacade } from '@app/store/authors/authors.facade';
+import { CoursesStateFacade } from '@app/store/courses/courses.facade';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
-import { combineLatestWith } from 'rxjs';
+import { combineLatest, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-course-form',
@@ -25,7 +25,9 @@ export class CourseFormComponent {
     public library: FaIconLibrary,
     private route: ActivatedRoute,
     private router: Router,
-    private coursesStore: CoursesStoreService
+    public coursesFacade: CoursesStateFacade,
+    public authorsFacade: AuthorsFacade,
+
   ) {
     library.addIconPacks(fas);
   }
@@ -35,14 +37,21 @@ export class CourseFormComponent {
 
   @Input() id = '';
 
+  private destroy$ = new Subject<void>();
+
   ngOnInit(): void {
     this.initializeForm();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private initializeForm(): void {
     this.formType = this.route.snapshot.data['formType'];
 
-    let initCourse: Course = {
+    let initialCourseData: Course = {
       title: '',
       description: '',
       duration: 0,
@@ -51,46 +60,36 @@ export class CourseFormComponent {
       creationDate: '',
     };
 
-    if (this.formType === 'add') {
-      this.coursesStore.authors$.subscribe((authors) => {
-        this.authorsData = authors;
+    combineLatest([this.coursesFacade.course$, this.authorsFacade.authors$])
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(([course, authors]) => {
+      if (course && this.formType === 'edit') {
+        this.authorsData = authors.filter(
+          (a) => !course?.authors.includes(a.id)
+        );
 
-        this.buildForm(initCourse);
-      });
-    } else if (this.formType === 'edit') {
-      this.coursesStore.getCourse(this.id);
+        const initCourseAuthors = authors.filter((a) =>
+          course?.authors.includes(a.id)
+        );
 
-      this.coursesStore.authors$
-        .pipe(combineLatestWith(this.coursesStore.courses$))
-        .subscribe(([authors, courses]) => {
-          this.authorsData = authors;
-          const course = courses[0];
+        initialCourseData = {
+          ...initialCourseData,
+          ...course,
+          authors: initCourseAuthors.map(author => author.id),
+        };
+      } else {
+        this.authorsData = [...authors];
+      }
 
-          initCourse = {
-            title: course.title,
-            description: course.description,
-            duration: course.duration,
-            authors: this.authorsData
-              .filter((authorData) => course.authors.includes(authorData.id))
-              .map((authorData) => authorData.id),
-            id: course.id,
-            creationDate: course.creationDate,
-          };
-
-          this.authorsData = this.authorsData.filter(
-            (authorData) => !course.authors.includes(authorData.id)
-          );
-
-          this.buildForm(initCourse);
-        });
-    }
+      this.buildForm(initialCourseData);
+    });
   }
 
-  private buildForm(initCourse: Course): void {
+  private buildForm(initialCourseData: Course): void {
     this.courseForm = this.fb.group({
-      title: [initCourse.title, [Validators.required, Validators.minLength(2)]],
+      title: [initialCourseData.title, [Validators.required, Validators.minLength(2)]],
       description: [
-        initCourse.description,
+        initialCourseData.description,
         [Validators.required, Validators.minLength(2)],
       ],
       newAuthor: this.fb.group({
@@ -100,13 +99,13 @@ export class CourseFormComponent {
         ],
       }),
       courseAuthors: this.fb.array<FormControl<Author | null>>(
-        initCourse.authors
+        initialCourseData.authors
           .map((authorId) => this.authorsData.find((author) => author.id === authorId))
           .filter((author): author is Author => author !== undefined)
           .map((author) => this.fb.control(author)),
         Validators.required
       ),
-      duration: [initCourse.duration, [Validators.required, Validators.min(0)]],
+      duration: [initialCourseData.duration, [Validators.required, Validators.min(0)]],
     });
   }
 
@@ -132,7 +131,7 @@ export class CourseFormComponent {
 
   createAuthor(name: string): void {
     if (this.author?.valid) {
-      this.coursesStore.createAuthor(name);
+      this.authorsFacade.createAuthor(name);
       this.courseForm.get('newAuthor')?.reset();
     }
   }
@@ -146,8 +145,7 @@ export class CourseFormComponent {
     this.authorsData = this.authorsData.filter(({ id }) => author.id !== id);
   }
 
-  removeCourseAuthor(index: number): void {
-    const author = this.courseAuthors.at(index).value;
+  removeCourseAuthor(author: Author, index: number): void {
     this.authorsData.push(author);
     this.courseAuthors.removeAt(index);
   }
@@ -165,9 +163,9 @@ export class CourseFormComponent {
     };
 
     if (this.formType === 'add') {
-      this.coursesStore.createCourse(courseData);
+      this.coursesFacade.createCourse(courseData);
     } else if (this.formType === 'edit') {
-      this.coursesStore.editCourse(this.id, courseData);
+      this.coursesFacade.editCourse(courseData, this.id);
     }
 
     this.router.navigate(['/courses']);
